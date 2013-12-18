@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Chromaria2's Settings</title>
+		<style>
+			body {
+				min-width: 357px;
+				overflow-x: hidden;
+			}
+
+			img {
+				margin: 5px;
+				border: 2px solid black;
+				vertical-align: middle;
+				width: 75px;
+				height: 75px;
+			}
+		</style>
+
+		<script type="text/javascript" src="options.js"></script>
+	</head>
+	<body>
+		<label for="subfix">File Subfix:
+			<input type="text" name="subfix" id="subfix" placeholder="gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb" size="40" /> </label>
+		<div><span>Example: gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb</span></div>
+		<label for="path">JSON-RPC:
+			<input type="text" name="path" id="path" placeholder="http://localhost:6800/jsonrpc" size="40" /></label>
+		<div><span>Example: http://localhost:6800/jsonrpc</span></div>
+		<input type="button" name="save" id="save" value="Save" />
+	</body>
+</html>
+<script type="text/javascript" src="jquery.min.1.10.2.js"></script>
