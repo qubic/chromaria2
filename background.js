@@ -58,7 +58,7 @@ function notification(id, text){
 	var option = getOption(text);
 	var settings = getSettings();
 
-	if (settings.notificationEnabled == "true") {
+	if (settings.notificationEnabled == true) {
 		chrome.notifications.create(id, option, function(){});
 	}
 }

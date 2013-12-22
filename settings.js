@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	var settings = JSON.parse(localStorage["settings"]);
+	var settings = getSettings();
 
 	load(settings);
 
@@ -13,11 +13,14 @@ $(document).ready(function() {
 	function load(s){
 		$('#aria2RPCUri').val(s.aria2RPCUri);
 		$('#fileExtension').val(s.fileExtension);
-		if(s.notificationEnabled == "true") {
+		if(s.notificationEnabled == true) {
 			$('#notificationEnabled').attr("checked", s.notificationEnabled);
 		}
 	}
-
+	function getSettings(){
+		var s = localStorage["settings"];
+		return s == undefined ? s : JSON.parse(s);
+	}
 	function updateSettings(s){
 		localStorage["settings"] = JSON.stringify(s);
 	}
