@@ -17,17 +17,29 @@
 				height: 75px;
 			}
 		</style>
+		<script type="text/javascript" src="jquery.min.1.10.2.js"></script>
+		<script type="text/javascript" src="settings.js"></script>
 
-		<script type="text/javascript" src="options.js"></script>
 	</head>
 	<body>
-		<label for="subfix">File Subfix:
-			<input type="text" name="subfix" id="subfix" placeholder="gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb" size="40" /> </label>
-		<div><span>Example: gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb</span></div>
-		<label for="path">JSON-RPC:
-			<input type="text" name="path" id="path" placeholder="http://localhost:6800/jsonrpc" size="40" /></label>
-		<div><span>Example: http://localhost:6800/jsonrpc</span></div>
-		<input type="button" name="save" id="save" value="Save" />
+		<div>
+			<h2>Settings</h2>
+		</div>
+		<div>
+			<label for="notificationEnabled">Enable Notification:
+				<input type="checkbox" name="notificationEnabled" id="notificationEnabled" />
+			</label>
+		</div>
+		<div>
+			<label for="fileExtension">File Extension:
+				<input type="text" name="fileExtension" id="fileExtension" placeholder="Example: gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb" size="64" /> </label>
+		</div>
+		<div>
+			<label for="aria2RPCUri">JSON-RPC:
+				<input type="text" name="aria2RPCUri" id="aria2RPCUri" placeholder="Example: http://localhost:6800/jsonrpc" size="48" /></label>
+		</div>
+		<div>
+			<input type="button" name="save" id="save" value="Save" />
+		</div>
 	</body>
 </html>
-<script type="text/javascript" src="jquery.min.1.10.2.js"></script>

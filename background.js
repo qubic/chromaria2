@@ -1,63 +1,82 @@
-function downloadMonitor(o) {
-	if (matchFileSubfix(o.filename)) {
-		this.task = aria2AddUri(o.url, o.filename);
-		submitTask(this.task, path);
-		chrome.downloads.cancel(o.id, function(s){});
-		showNotification(o.filename + "\nYour download will start shortly.")
-
-	}
+/**
+ * get settings
+ **/
+function getSettings(){
+	var s = localStorage["settings"];
+	return s == undefined ? s : JSON.parse(s);
 }
-
-function showNotification(msg) {
-	// showNotification
-	var opt = {
+/**
+ * get default settings
+ **/
+function getDefaultSettings(){
+	var s = {
+		// enable notification
+		"notificationEnabled": "true",
+		// file extension
+		"fileExtension": "gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb, dmg, pkg",
+		// aria2 JSON RPC
+		"aria2RPCUri": "http://raspberrypi.local:6800/jsonrpc"
+	};
+	return s;
+}
+/**
+ * update settings
+ **/
+function updateSettings(s){
+	localStorage["settings"] = JSON.stringify(s);
+}
+/**
+ * create option
+ **/
+function getOption(m){
+	var o = {
 		type: "basic",
-		title: "Aria2 for Chrome",
-		message: msg,
+		title: "Chrome extension for aria2",
+		message: m,
 		iconUrl: "icons/48.png"
 	};
-	chrome.notifications.create("info", opt, notifyCallback);
-	chrome.notifications.clear("info", opt, notifyCallback);
+	return o;
 }
-
-function notifyCallback(o) {
-	// do something
-	return true;
-}
-
-// Return true when match specified file subfix
-function matchFileSubfix(filename) {
-	return subfix.indexOf(getFileSubfix(filename)) >= 0 ? true : false;
-}
-
-// Get File extension
-function getFileSubfix(filename) {
+/**
+ * Get file extension
+ **/
+function getFileExtension(filename) {
 	return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
 }
+/**
+ * Return true when match specified file extension
+ **/
+function matchFileExtension(fileExtensions, filename) {
+	if(fileExtensions != undefined){
+		return fileExtensions.indexOf(getFileExtension(filename)) >= 0 ? true : false;
+	}
+}
+/**
+ * Show a notification
+ **/
+function notification(id, text){
+	var option = getOption(text);
+	var settings = getSettings();
 
-// submit task
-function submitTask(task, jsonRPCPath) {
-	var request = new XMLHttpRequest();
-	/*
-	   request.onreadystatechange = function() {
-	// in case of network errors this might not give reliable results
-	if ( this.readyState == this.DONE) {
-	if ( this.status == 200 ) {
-	return;
-	} else {
-	showNotification("HTTP" + this.status + "\nSorry, an error occurred.")
+	if (settings.notificationEnabled == "true") {
+		chrome.notifications.create(id, option, function(){});
 	}
-	}
-	};
-	*/
-	request.open("POST", jsonRPCPath + "?tm=" + (new Date()).getTime().toString(), true);
-	request.setRequestHeader("Content-Type",	"application/x-www-form-urlencoded; charset=UTF-8");
-	request.send(JSON.stringify(task));
 }
 
-///////////
-// Aria2 //
-///////////
+/**
+ * Submit aria2 downlaod task
+ **/
+function submitTask(task, jsonRPCPath) {
+	var request = new XMLHttpRequest();
+	request.open("POST", jsonRPCPath + "?tm=" + (new Date()).getTime().toString(), true);
+	request.setRequestHeader("Content-Type",	"application/x-www-form-urlencoded; charset=UTF-8");
+	var content = JSON.stringify(task);
+	request.send(content);
+}
+
+/**
+ * Aria2 object
+ **/
 function aria2AddUri(url, name) {
 	var o = [ {
 		"jsonrpc" : "2.0",
@@ -71,6 +90,75 @@ function aria2AddUri(url, name) {
 }
 
 
-var path = localStorage["path"];
-var subfix = localStorage["subfix"];
-chrome.downloads.onDeterminingFilename.addListener(downloadMonitor);
+/**
+ * initial variables
+ **/
+function initialize(){
+	var settings = getSettings();
+	if(settings == undefined){
+		settings = getDefaultSettings();
+		updateSettings(settings);
+	}
+
+	if (settings.extensionEnabled == "true") {
+		var option = getOption("Chromaria2 enabled!");
+		chrome.notifications.create("info", option, function(){});
+	} else {
+		var option = getOption("Click me to enable Chromaria2!");
+		chrome.notifications.create("enableExtension", option, function(){});
+	}
+}
+
+/**
+ * Initialize on extension installed
+ **/
+chrome.runtime.onInstalled.addListener(function(){
+	initialize();
+});
+
+/**
+ * Clear notifications on notification clicked
+ **/
+chrome.notifications.onClicked.addListener(function(notificationId) {
+	if(notificationId == "enableExtension") {
+		var settings = getSettings();
+		settings.extensionEnabled = "true";
+		updateSettings(settings);
+
+		notification("info", "Now reloading Chromaria2!");
+		chrome.runtime.reload();
+	}
+	chrome.notifications.clear(notificationId, function(){});
+});
+
+/**
+ * Clear notifications on notification closed
+ **/
+chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
+	chrome.notifications.clear(notificationId, function(){});
+});
+
+chrome.downloads.onDeterminingFilename.addListener(function(downloadItem, suggest) {
+	suggest({
+		filename: downloadItem.filename,
+		conflict_action: 'overwrite',
+		conflictAction: 'overwrite'
+	});
+
+	var settings = getSettings();
+
+	if (settings.extensionEnabled == undefined) {
+		return;
+	}
+
+	if (matchFileExtension(settings.fileExtension, downloadItem.filename)) {
+		// create aria2 download task
+		var downloadTask = aria2AddUri(downloadItem.url, downloadItem.filename);
+		// submit aria2 download task
+		submitTask(downloadTask, settings.aria2RPCUri);
+		// cancel chrome download task
+		chrome.downloads.cancel(downloadItem.id, function(s){});
+		// show notification
+		notification((new Date()).getTime().toString(), downloadItem.filename + "\nYour download will start shortly.");
+	}
+});
