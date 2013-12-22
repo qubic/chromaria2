@@ -1,16 +1,25 @@
 $(document).ready(function() {
-	init();
+	var settings = JSON.parse(localStorage["settings"]);
+
+	load(settings);
 
 	$("#save").click(function() {
-		localStorage["subfix"] = $("#subfix").val();
-		localStorage["path"] = $("#path").val();
+		settings.fileExtension = $("#fileExtension").val();
+		settings.aria2RPCUri = $("#aria2RPCUri").val();
+		settings.notificationEnabled = $("#notificationEnabled").prop("checked");
+		updateSettings(settings);
 	});
 
-	function init(){
-		var path = localStorage["path"];
-		var subfix = localStorage["subfix"];
-		$('#path').val(path);
-		$('#subfix').val(subfix);
+	function load(s){
+		$('#aria2RPCUri').val(s.aria2RPCUri);
+		$('#fileExtension').val(s.fileExtension);
+		if(s.notificationEnabled == "true") {
+			$('#notificationEnabled').attr("checked", s.notificationEnabled);
+		}
+	}
+
+	function updateSettings(s){
+		localStorage["settings"] = JSON.stringify(s);
 	}
 });
 
