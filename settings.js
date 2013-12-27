@@ -7,6 +7,7 @@ $(document).ready(function() {
 		settings.fileExtension = $("#fileExtension").val();
 		settings.aria2RPCUri = $("#aria2RPCUri").val();
 		settings.notificationEnabled = $("#notificationEnabled").prop("checked");
+		settings.extensionEnabled = $("#extensionEnabled").prop("checked");
 		updateSettings(settings);
 	});
 
@@ -15,6 +16,9 @@ $(document).ready(function() {
 		$('#fileExtension').val(s.fileExtension);
 		if(s.notificationEnabled == true) {
 			$('#notificationEnabled').attr("checked", s.notificationEnabled);
+		}
+		if(s.extensionEnabled) {
+			$('#extensionEnabled').attr("checked", s.extensionEnabled);
 		}
 	}
 	function getSettings(){
