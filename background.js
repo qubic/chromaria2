@@ -15,7 +15,7 @@ function getDefaultSettings(){
 		// file extension
 		"fileExtension": "gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb, dmg, pkg",
 		// aria2 JSON RPC
-		"aria2RPCUri": "http://raspberrypi.local:6800/jsonrpc"
+		"aria2RPCUri": "http://localhost:6800/jsonrpc"
 	};
 	return s;
 }
