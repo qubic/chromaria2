@@ -4,6 +4,7 @@
   "name": "Chromaria2",
   "description": "Chrome extension for aria2",
   "version": "0.2",
+  "minimum_chrome_version": "28.0.0.0",
 
   "browser_action": {
     "default_icon": "icons/48.png",
