@@ -14,7 +14,7 @@ $(document).ready(function() {
 	function load(s){
 		$('#aria2RPCUri').val(s.aria2RPCUri);
 		$('#fileExtension').val(s.fileExtension);
-		if(s.notificationEnabled == true) {
+		if(s.notificationEnabled) {
 			$('#notificationEnabled').attr("checked", s.notificationEnabled);
 		}
 		if(s.extensionEnabled) {

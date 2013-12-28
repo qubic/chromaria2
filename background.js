@@ -10,8 +10,10 @@ function getSettings(){
  **/
 function getDefaultSettings(){
 	var s = {
+		// enable extension:
+		"extensionEnabled": false,
 		// enable notification
-		"notificationEnabled": "true",
+		"notificationEnabled": true,
 		// file extension
 		"fileExtension": "gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb, dmg, pkg",
 		// aria2 JSON RPC
@@ -58,7 +60,7 @@ function notification(id, text){
 	var option = getOption(text);
 	var settings = getSettings();
 
-	if (settings.notificationEnabled == true) {
+	if (settings.notificationEnabled) {
 		chrome.notifications.create(id, option, function(){});
 	}
 }
@@ -100,7 +102,7 @@ function initialize(){
 		updateSettings(settings);
 	}
 
-	if (settings.extensionEnabled == "true") {
+	if (settings.extensionEnabled) {
 		var option = getOption("Chromaria2 enabled!");
 		chrome.notifications.create("info", option, function(){});
 	} else {
@@ -122,7 +124,7 @@ chrome.runtime.onInstalled.addListener(function(){
 chrome.notifications.onClicked.addListener(function(notificationId) {
 	if(notificationId == "enableExtension") {
 		var settings = getSettings();
-		settings.extensionEnabled = "true";
+		settings.extensionEnabled = true;
 		updateSettings(settings);
 
 		notification("info", "Now reloading Chromaria2!");
@@ -139,19 +141,18 @@ chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
 });
 
 chrome.downloads.onDeterminingFilename.addListener(function(downloadItem, suggest) {
-	suggest({
-		filename: downloadItem.filename,
-		conflict_action: 'overwrite',
-		conflictAction: 'overwrite'
-	});
-
 	var settings = getSettings();
 
 	if (settings.extensionEnabled == undefined) {
 		return;
 	}
 
-	if (matchFileExtension(settings.fileExtension, downloadItem.filename)) {
+	if (settings.extensionEnabled & matchFileExtension(settings.fileExtension, downloadItem.filename)) {
+		suggest({
+			filename: downloadItem.filename,
+			conflict_action: 'overwrite',
+			conflictAction: 'overwrite'
+		});
 		// create aria2 download task
 		var downloadTask = aria2AddUri(downloadItem.url, downloadItem.filename);
 		// submit aria2 download task
