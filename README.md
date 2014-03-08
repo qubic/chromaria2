@@ -1,4 +1,7 @@
-chromaria2
-==========
+ToAria2
+=======
+Send download item to aria2.
 
-Chrome extension for aria2
+Dependency
+----------
+jQuery 1.11.0 (not included in repository)

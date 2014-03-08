@@ -6,20 +6,12 @@ $(document).ready(function() {
 	$("#save").click(function() {
 		settings.fileExtension = $("#fileExtension").val();
 		settings.aria2RPCUri = $("#aria2RPCUri").val();
-		settings.notificationEnabled = $("#notificationEnabled").prop("checked");
-		settings.extensionEnabled = $("#extensionEnabled").prop("checked");
 		updateSettings(settings);
 	});
 
 	function load(s){
 		$('#aria2RPCUri').val(s.aria2RPCUri);
 		$('#fileExtension').val(s.fileExtension);
-		if(s.notificationEnabled) {
-			$('#notificationEnabled').attr("checked", s.notificationEnabled);
-		}
-		if(s.extensionEnabled) {
-			$('#extensionEnabled').attr("checked", s.extensionEnabled);
-		}
 	}
 	function getSettings(){
 		var s = localStorage["settings"];
