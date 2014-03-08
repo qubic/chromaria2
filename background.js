@@ -14,7 +14,7 @@ function getDefaultSettings() {
     var s = {
         // enable extension:
         // file extension
-        "fileExtension": "mkv,avi,mp4,wmv,gz, tgz, bz2, cab, zip, 7z, lzma, jar, rar, xz, txz, exe, rpm, deb, dmg, pkg",
+        "fileExtension": "mkv,avi,mp4,wmv",
         // aria2 JSON RPC
         "aria2RPCUri": "http://localhost:6800/jsonrpc"
     };
@@ -83,7 +83,7 @@ function notification(id, text, withButtons) {
         option = getOption2(text);
     }
     var settings = getSettings();
-    chrome.notifications.create(id, option, function () {});
+    chrome.notifications.create(id, option, function() {});
 }
 
 /**
@@ -133,7 +133,7 @@ function initialize() {
 
 function updateTips(t) {
     tips.text(t).addClass("ui-state-highlight");
-    setTimeout(function () {
+    setTimeout(function() {
         tips.removeClass("ui-state-highlight", 1500);
     }, 500);
 }
@@ -151,20 +151,20 @@ function checkLength(o, n, min, max) {
 /**
  * Initialize on extension installed
  **/
-chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(function() {
     initialize();
 });
 
 /**
  * Clear notifications on notification closed
  **/
-chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
-    chrome.notifications.clear(notificationId, function () {});
+chrome.notifications.onClosed.addListener(function(notificationId, byUser) {
+    chrome.notifications.clear(notificationId, function() {});
 });
 
-chrome.downloads.onDeterminingFilename.addListener(function (downloadItem, suggest) {
+chrome.downloads.onDeterminingFilename.addListener(function(downloadItem, suggest) {
     // pause chrome download task
-    chrome.downloads.pause(downloadItem.id, function () {});
+    chrome.downloads.pause(downloadItem.id, function() {});
     var settings = getSettings();
     suggest({
         filename: downloadItem.filename,
@@ -174,8 +174,8 @@ chrome.downloads.onDeterminingFilename.addListener(function (downloadItem, sugge
     var cookiesStr = 'Cookie: ';
     chrome.cookies.getAll({
         url: downloadItem.url
-    }, function (cookies) {
-        cookies.forEach(function (entry) {
+    }, function(cookies) {
+        cookies.forEach(function(entry) {
             cookiesStr += entry.name + '=' + entry.value + '; ';
         });
         if (matchFileExtension(settings.fileExtension, downloadItem.filename)) {
@@ -184,23 +184,23 @@ chrome.downloads.onDeterminingFilename.addListener(function (downloadItem, sugge
             // submit aria2 download task
             submitTask(downloadTask, settings.aria2RPCUri);
             // cancel chrome download task
-            chrome.downloads.cancel(downloadItem.id, function () {});
+            chrome.downloads.cancel(downloadItem.id, function() {});
             // show notification
             notification((new Date()).getTime().toString(), downloadItem.filename + "\nYour download will start shortly.");
         } else {
             // show notification
             notification((new Date()).getTime().toString(), downloadItem.filename + "\nSend to Aria2?", true);
-            chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
+            chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex) {
                 if (buttonIndex == 0) {
                     // create aria2 download task
                     var downloadTask = aria2AddUri(downloadItem.url, downloadItem.filename, cookiesStr);
                     // submit aria2 download task
                     submitTask(downloadTask, settings.aria2RPCUri);
-                    chrome.downloads.cancel(downloadItem.id, function () {});
+                    chrome.downloads.cancel(downloadItem.id, function() {});
                 } else {
-                    chrome.downloads.resume(downloadItem.id, function () {});
+                    chrome.downloads.resume(downloadItem.id, function() {});
                 }
-                chrome.notifications.clear(notificationId, function (wasCleared) {})
+                chrome.notifications.clear(notificationId, function(wasCleared) {})
             });
         }
     });
