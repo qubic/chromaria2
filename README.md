@@ -1,6 +1,6 @@
 ToAria2
 =======
-Send download item to aria2.
+A chrome extension that send a download item to aria2.
 
 Dependency
 ----------
